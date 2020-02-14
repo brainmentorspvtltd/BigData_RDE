@@ -1,0 +1,174 @@
+Hadoop Installation Windows
+Setting up a Single Node Hadoop Cluster
+
+Prerequisites to install Hadoop on Linux
+Add a Hadoop system user
+
+Command : sudo addgroup hadoop_
+Command : sudo adduser --ingroup hadoop_ hduser_
+======================================================
+Enter your password, name and other details
+NOTE: There is a possibility of a error in this setup and installation process.
+"hduser is not in the sudoers file. This incident will be reported."
+
+This error can be resolved by Login as a root user
+Command : su admin
+Command : sudo adduser hduser_ sudo
+======================================================
+Re-login as hduser_
+Command : su hduser_
+======================================================
+Configure SSH
+First, switch user, enter the following command
+Command : su - hduser_
+Command : ssh-keygen -t rsa -P ""
+
+Enable SSH access to local machine using this key.
+
+Command : cat $HOME/.ssh/id_rsa.pub >> $HOME/.ssh/authorized_keys
+
+Now test SSH setup by connecting to localhost as 'hduser' user.
+
+Command : ssh localhost
+======================================================
+Note: if you see error in response to 'ssh localhost', then there is a possibility that SSH is not available on this system-
+
+To resolve this -
+Purge SSH using,
+Command : sudo apt-get purge openssh-server
+
+Install SSH using the command-
+Command : sudo apt-get install openssh-server
+======================================================
+
+1. Install Java
+- Java JDK Link to download
+https://www.oracle.com/java/technologies/javase-jdk8-downloads.html
+- extract java tar file
+Command 1: tar -xvf jdk-8u101-linux-i586.tar.gz
+Command 2: javac -version
+======================================================
+2. Download Hadoop
+Command: wget - https://archive.apache.org/dist/hadoop/core/hadoop-2.7.3/hadoop-2.7.3.tar.gz
+Extract hadoop
+Command : tar -xvf hadoop-2.7.3.tar.gz
+======================================================
+3. Add the Hadoop and Java paths in the bash file (.bashrc)
+Command:  vi .bashrc
+#Set HADOOP_HOME
+export HADOOP_HOME=<Installation Directory of Hadoop>
+
+#Set JAVA_HOME
+export JAVA_HOME=<Installation Directory of Java>
+
+# Add bin/ directory of Hadoop to PATH
+export PATH=$PATH:$HADOOP_HOME/bin
+======================================================
+4. Save the bash file and close it
+For applying all these changes to the current Terminal, execute the source command.
+
+Command: source .bashrc
+Command: hadoop version
+
+======================================================
+5. Configurations
+Command: cd hadoop-2.7.3/etc/hadoop/
+Open core-site.xml and edit the property
+Command: vi core-site.xml
+paste the xml code in file and save
+
+<configuration>
+   <property>
+       <name>fs.defaultFS</name>
+       <value>hdfs://localhost:9000</value>
+   </property>
+</configuration>
+======================================================
+
+Edit file hdfs-site.xml
+Command: vi hdfs-site.xml
+paste xml code and save this file.
+
+<configuration>
+   <property>
+       <name>dfs.replication</name>
+       <value>1</value>
+   </property>
+   <property>
+       <name>dfs.permission</name>
+       <value>false</value>
+   </property>
+</configuration>
+======================================================
+
+Edit the mapred-site.xml file and edit the property
+Command: cp mapred-site.xml.template mapred-site.xml
+Command: vi mapred-site.xml
+
+paste xml code and save this file.
+
+<configuration>
+   <property>
+       <name>mapreduce.framework.name</name>
+       <value>yarn</value>
+   </property>
+</configuration>
+
+======================================================
+
+Edit file yarn-site.xml
+Command: vi yarn-site.xml
+paste xml code and save this file.
+
+<configuration>
+   <property>
+    	<name>yarn.nodemanager.aux-services</name>
+    	<value>mapreduce_shuffle</value>
+   </property>
+   <property>
+	<name>yarn.nodemanager.auxservices.mapreduce.shuffle.class</name>  
+	<value>org.apache.hadoop.mapred.ShuffleHandler</value>
+   </property>
+</configuration>
+======================================================
+
+Edit hadoop-env.sh and add the Java Path
+Command: vi hadoop–env.sh
+export JAVA_HOME = /home/admin/jdk1....
+
+======================================================
+6. Go to Hadoop home directory and format the NameNode.
+Command: cd
+Command: cd hadoop-2.7.3
+Command: bin/hadoop namenode -format
+
+======================================================
+7. Testing
+Go to hadoop-2.7.3/sbin directory and start all the daemons
+Command: cd hadoop-2.7.3/sbin
+Command: ./start-all.sh
+The above command is a combination of start-dfs.sh, start-yarn.sh & mr-jobhistory-daemon.sh
+======================================================
+(Or you can start like this)
+- Start namenode
+Command: ./hadoop-daemon.sh start namenode
+- Start Datanode
+Command: ./hadoop-daemon.sh start datanode
+- Start ResourceManager
+Command: ./yarn-daemon.sh start resourcemanager
+- Start NodeManager
+Command: ./yarn-daemon.sh start nodemanager
+======================================================
+Start JobHistoryServer:
+JobHistoryServer is responsible for servicing all job history related requests from client.
+
+Command: ./mr-jobhistory-daemon.sh start historyserver
+======================================================
+8. To check that all the Hadoop services are up and running, run the below command.
+Command: jps
+
+Open: http://localhost:8088
+Open: http://localhost:50070
+======================================================
+Hadoop installed Successfully............
+======================================================
