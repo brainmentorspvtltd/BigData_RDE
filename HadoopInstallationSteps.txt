@@ -80,7 +80,7 @@ paste xml code and save this file.
 
 Edit file C:/Hadoop-2.8.0/etc/hadoop/hadoop-env.cmd 
 by closing the command line 
-“JAVA_HOME=%JAVA_HOME%” instead of set “JAVA_HOME=C:\Java”
+“JAVA_HOME=%JAVA_HOME%” instead of set “JAVA_HOME=C:\Java\jdk1.8.0_221”
 
 ======================================================
 6. Hadoop Configurations
